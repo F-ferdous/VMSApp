@@ -81,10 +81,10 @@ const Musak65 = () => {
   return (
     <>
       <div className="pt-4 pb-2 px-10 bg-slate-100 w-full flex justify-between">
-        <p className="font-bold text-14">Preview</p>
+        <p className="font-bold text-xl">Preview</p>
         <ReactToPrint
           trigger={() => (
-            <button className="bg-[#ff5c8e] text-white rounded-lg px-4 py-2 mx-1 text-14 hover:bg-[#9e103b]">
+            <button className="bg-[#ff5c8e] text-white rounded-lg px-4 py-2 mx-1 text-xl hover:bg-[#9e103b]">
               Print
             </button>
           )}
@@ -95,7 +95,7 @@ const Musak65 = () => {
         <div className="flex w-[95%] justify-between pt-5 text-black">
           <img src={bdLogo} className="w-[100px] h-[76px] pl-6" />
           <div className="text-center">
-            <h1 className="text-[17px] font-bold tracking-wider">
+            <h1 className="text-xl font-bold tracking-wider">
               গণপ্রজাতন্ত্রী বাংলাদেশ সরকার{" "}
             </h1>
             <p className="tracking-wide">জাতীয় রাজস্ব বোর্ড</p>
@@ -115,17 +115,15 @@ const Musak65 = () => {
             মূসক - ৬.৫{" "}
           </p>
         </div>
-        <div className="flex flex-col pl-4 items-baseline justify-between w-[95%] text-[14px]">
+        <div className="flex flex-col pl-4 items-baseline justify-between w-[95%] text-md">
           <p>
             প্রেরণকারী শাখা/পণ্যাগারের নাম ও ঠিকানাঃ STAR PARTICLE BOARD MILLS
             LTD (Factory)
           </p>
-          <p className="text-[14px] tracking-[-.1px]">
-            {data && data.HeadAddress}
-          </p>
+          <p className="text-md tracking-[-.1px]">{data && data.HeadAddress}</p>
         </div>
         <div className="flex w-[95%] pt-9 gap-3">
-          <div className="w-[45%] text-[14px] flex flex-col items-baseline mr-5 pr-10">
+          <div className="w-[45%] text-md flex flex-col items-baseline mr-5 pr-10">
             <p>
               গ্রহীতা শাখা/পণ্যাগারের নাম ও ঠিকানাঃ STAR PARTICLE BOARD MILLS
               LTD (CTG)
@@ -170,7 +168,7 @@ const Musak65 = () => {
                 <th className="p-1 border-[0.5px] border-black">মন্তব্য</th>
               </tr>
             </thead>
-            <tbody className="text-14 stroke-black">
+            <tbody className="text-lg stroke-black">
               <tr>
                 <td className="p-1 border-[0.5px] border-black">(১)</td>
                 <td className="p-1 border-[0.5px] border-black">(২)</td>

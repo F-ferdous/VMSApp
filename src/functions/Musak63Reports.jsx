@@ -97,8 +97,8 @@ const Musak63Reports = () => {
               </div>
             </div>
           </div>
-          <table className="w-[90%] items-center m-auto mt-2 text-xs text-left   border-collapse border border-gray-400">
-            <thead className="text-xs text-gray-50 uppercase bg-gradient-to-l from-sky-500 via-violet-500 to-pink-500">
+          <table className="w-[90%] items-center m-auto mt-2 text-left   border-collapse border border-gray-400">
+            <thead className="text-md text-gray-50 uppercase bg-gradient-to-l from-sky-500 via-violet-500 to-pink-500">
               <tr>
                 <th className="p-2 border border-gray-400">SL</th>
                 <th className="p-2 border border-gray-400">Invoice No</th>

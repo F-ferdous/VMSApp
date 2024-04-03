@@ -64,13 +64,13 @@ const Header = () => {
     navigate("/");
   };
   return (
-    <section className="w-full bg-gradient-to-r from-sky-500 via-violet-600 to-pink-500 px-5">
+    <section className="w-full bg-gradient-to-r from-sky-500 via-violet-600 to-pink-500 px-5 text-xl">
       <div className=" flex justify-between items-center mx-5 px-2 py-5">
         <p
           onClick={GoBack}
-          className="flex gap-2 text-xl font-bold p-0 m-0 items-center text-white cursor-pointer"
+          className="flex gap-2 text-2xl tracking-wider font-bold p-0 m-0 items-center text-white cursor-pointer"
         >
-          <AiFillCodeSandboxCircle className="text-3xl text-gray-800" /> VMS
+          <AiFillCodeSandboxCircle className="text-4xl text-gray-800" /> VMS
         </p>
         <div>
           <ul className="flex items-center gap-8 text-white font-semibold group">
@@ -90,7 +90,7 @@ const Header = () => {
                         onMouseLeave={() => setHoveredItem(null)}
                       >
                         {link.sublinks.map((sub) => (
-                          <li className="text-sm text-left text-gray-50 px-3 py-3 hover:bg-sky-800 hover:text-gray-50">
+                          <li className="text-lg text-left text-gray-50 px-3 py-3 hover:bg-sky-800 hover:text-gray-50">
                             <Link to={sub.link}>{sub.name}</Link>
                           </li>
                         ))}
@@ -106,7 +106,7 @@ const Header = () => {
         <div>
           {user && (
             <div className="flex gap-2 ">
-              <p className="py-2 text-[14px] text-white">
+              <p className="py-2 text-xl text-white">
                 Hello! <span className="font-semibold">{user.email}</span>
               </p>
               <button

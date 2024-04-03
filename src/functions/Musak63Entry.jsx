@@ -35,6 +35,7 @@ const Musak63Entry = () => {
   const [Sku, setSku] = useState("");
   const [NetAmount, setNetAmount] = useState("");
   const [Vat, setVat] = useState(15);
+  const [TotalVat, setTotalVat] = useState(0);
   const [GrossAmount, setGrossAmount] = useState("");
   const [ItemNo, setItemNo] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -55,6 +56,8 @@ const Musak63Entry = () => {
   const [Destination, setDestination] = useState("");
   const [VehicleNature, setVehicleNature] = useState("");
 
+  const [isSaveClicked, setIsSaveClicked] = useState(false);
+
   const [totalSku, setTotalSku] = useState(0);
   const [totalNetamount, setTotalNetamount] = useState(0);
   const [totalgrossamount, setTotalgrossamount] = useState(0);
@@ -71,9 +74,14 @@ const Musak63Entry = () => {
 
   const handleAddProduct = (e) => {
     e.preventDefault();
-    const newAmountWithoutVAT = parseFloat(unitPrice) * parseFloat(IssueQty);
-    const Gross = newAmountWithoutVAT * 0.15 + newAmountWithoutVAT;
-    const VatAmount = newAmountWithoutVAT * 0.15;
+    const newAmountWithoutVAT = Number(
+      (parseFloat(unitPrice) * parseFloat(IssueQty)).toFixed(2)
+    );
+    const Gross = Number(
+      parseFloat(newAmountWithoutVAT * 0.15 + newAmountWithoutVAT).toFixed(2)
+    );
+    const VatAmount = Number((newAmountWithoutVAT * 0.15).toFixed(2));
+
     const newProduct = {
       productName,
       uom,
@@ -93,9 +101,14 @@ const Musak63Entry = () => {
     setTotalAmountWithoutVAT(totalAmountWithoutVAT + newAmountWithoutVAT);*/
 
     //setTotalSku(totalSku + parseInt(Sku, 10));
-    setTotalNetamount((prevTotal) => prevTotal + newAmountWithoutVAT);
-    setTotalgrossamount((prevTotal) => prevTotal + Gross);
-    settotalUnitPrice((prevTotal) => prevTotal + parseFloat(unitPrice));
+    setTotalNetamount((prevTotal) =>
+      Number((prevTotal + newAmountWithoutVAT).toFixed(2))
+    );
+    setTotalgrossamount((prevTotal) => Number((prevTotal + Gross).toFixed(2)));
+    settotalUnitPrice((prevTotal) =>
+      Number((prevTotal + parseFloat(unitPrice)).toFixed(2))
+    );
+    setTotalVat((prevTotal) => Number((prevTotal + VatAmount).toFixed(2)));
 
     setProductName("");
     setUom("");
@@ -113,7 +126,29 @@ const Musak63Entry = () => {
 
   const getCurrentDateAndTime = () => {
     const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString(); // Change the date format as needed
+    const day = currentDate.getDate();
+    const monthIndex = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    // Get the month name using the month index
+    const monthName = monthNames[monthIndex];
+
+    const formattedDate = `${day}-${monthName}-${year}`; // Change the date format as needed
     const formattedTime = currentDate.toLocaleTimeString(); // Change the time format as needed
     return `${formattedDate} ${formattedTime}`;
   };
@@ -122,10 +157,17 @@ const Musak63Entry = () => {
     const updatedProductList = [...productList];
     const deletedProduct = updatedProductList.splice(index, 1)[0];
 
-    setTotalNetamount((prevTotal) => prevTotal - deletedProduct.NetAmount);
-    setTotalgrossamount((prevTotal) => prevTotal - deletedProduct.GrossAmount);
-    settotalUnitPrice(
-      (prevTotal) => prevTotal - parseFloat(deletedProduct.unitPrice)
+    setTotalNetamount((prevTotal) =>
+      Number((prevTotal - deletedProduct.NetAmount).toFixed(2))
+    );
+    setTotalgrossamount((prevTotal) =>
+      Number((prevTotal - deletedProduct.GrossAmount).toFixed(2))
+    );
+    setTotalVat((prevTotal) =>
+      Number((prevTotal - deletedProduct.Vat).toFixed(2))
+    );
+    settotalUnitPrice((prevTotal) =>
+      Number((prevTotal - parseFloat(deletedProduct.unitPrice)).toFixed(2))
     );
     setProductList(updatedProductList);
 
@@ -137,6 +179,7 @@ const Musak63Entry = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+    setIsSaveClicked(true);
     try {
       const data = {
         issueDate,
@@ -156,37 +199,42 @@ const Musak63Entry = () => {
         totalSku,
         totalgrossamount,
         totalUnitPrice,
+        TotalVat,
         productList,
       };
-      await addDoc(collection(db, "SalesEntry"), {
+      const docRef = await addDoc(collection(db, "SalesEntry"), {
         ...data,
-      }).then(() => {
-        toast.success("Successfully added", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        setInvoiceNum("");
-        setAddress("");
-
-        setChallanType("");
-        setCustomer("");
-        setDestination("");
-        setBIN("");
-        setExportRemarks("");
-        setVehicleNature("");
-        setExportRate("");
-        setCpc("");
-        setTotalNetamount(0);
-        setTotalgrossamount(0);
-        settotalUnitPrice(0);
-        setProductList([]);
       });
+
+      toast.success("Successfully added", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      setInvoiceNum("");
+      setAddress("");
+
+      setChallanType("");
+      setCustomer("");
+      setDestination("");
+      setBIN("");
+      setExportRemarks("");
+      setVehicleNature("");
+      setExportRate("");
+      setCpc("");
+      setTotalNetamount(0);
+      setTotalgrossamount(0);
+      settotalUnitPrice(0);
+      setTotalVat(0);
+      setProductList([]);
+
+      setIsSaveClicked(false);
+      navigate(`/SalesEntryReportView/${docRef.id}`);
     } catch (e) {
       console.log(e);
     }
@@ -311,10 +359,17 @@ const Musak63Entry = () => {
     setRemarks(selectedProduct.remarks);
     setItemNo(selectedProduct.ItemNo);
 
-    setTotalNetamount((prevTotal) => prevTotal - selectedProduct.NetAmount);
-    setTotalgrossamount((prevTotal) => prevTotal - selectedProduct.GrossAmount);
-    settotalUnitPrice(
-      (prevTotal) => prevTotal - parseFloat(selectedProduct.unitPrice)
+    setTotalNetamount((prevTotal) =>
+      Number((prevTotal - selectedProduct.NetAmount).toFixed(2))
+    );
+    setTotalgrossamount((prevTotal) =>
+      Number((prevTotal - selectedProduct.GrossAmount).toFixed(2))
+    );
+    setTotalVat((prevTotal) =>
+      Number((prevTotal - selectedProduct.Vat).toFixed(2))
+    );
+    settotalUnitPrice((prevTotal) =>
+      Number((prevTotal - parseFloat(selectedProduct.unitPrice)).toFixed(2))
     );
 
     setIsEditClicked(true);
@@ -338,9 +393,13 @@ const Musak63Entry = () => {
   const handleSaveEdit = (e) => {
     // Update the product in the productList array with edited values
     e.preventDefault();
-    const newAmountWithoutVAT = parseFloat(unitPrice) * parseFloat(IssueQty);
-    const VatAmount = newAmountWithoutVAT * 0.15;
-    const Gross = newAmountWithoutVAT * 0.15 + newAmountWithoutVAT;
+    const newAmountWithoutVAT = Number(
+      (parseFloat(unitPrice) * parseFloat(IssueQty)).toFixed(2)
+    );
+    const VatAmount = Number((newAmountWithoutVAT * 0.15).toFixed(2));
+    const Gross = Number(
+      (newAmountWithoutVAT * 0.15 + newAmountWithoutVAT).toFixed(2)
+    );
     const updatedProductList = [...productList];
     updatedProductList[editingIndex] = {
       productName,
@@ -356,9 +415,14 @@ const Musak63Entry = () => {
       ItemNo,
     };
 
-    setTotalNetamount((prevTotal) => prevTotal + newAmountWithoutVAT);
-    setTotalgrossamount((prevTotal) => prevTotal + Gross);
-    settotalUnitPrice((prevTotal) => prevTotal + parseFloat(unitPrice));
+    setTotalNetamount((prevTotal) =>
+      Number((prevTotal + newAmountWithoutVAT).toFixed(2))
+    );
+    setTotalgrossamount((prevTotal) => Number((prevTotal + Gross).toFixed(2)));
+    settotalUnitPrice((prevTotal) =>
+      Number((prevTotal + parseFloat(unitPrice)).toFixed(2))
+    );
+    setTotalVat((prevTotal) => Number((prevTotal + VatAmount).toFixed(2)));
 
     // Clear input fields and reset editingIndex after saving edit
     setProductName("");
@@ -393,13 +457,13 @@ const Musak63Entry = () => {
     navigate("/");
   };
   return (
-    <section className="w-full flex flex-col items-center justify-center mt-2 p-2 mx-5">
+    <section className="w-full flex flex-col items-center justify-center mt-2 p-2 mx-5 text-lg">
       <div className="bg-gray-100 w-[90%]">
         <ToastContainer />
         <div className="bg-gradient-to-tl from-sky-400 to-sky-800 p-2 flex justify-between items-center">
-          <h1 className="text-white text-[18px] font-bold">Sales Entry</h1>
+          <h1 className="text-white font-bold">Sales Entry</h1>
           <button
-            className="px-3 py-2 text-white text-[18px] rounded-lg bg-[#0a4c76] hover:bg-[#13384f]"
+            className="px-3 py-2 text-white rounded-lg bg-[#0a4c76] hover:bg-[#13384f]"
             onClick={GoBack}
           >
             Go Back
@@ -411,7 +475,7 @@ const Musak63Entry = () => {
           <div className="flex">
             <div className="w-[50%] p-2">
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Invoice No
                 </label>
                 <input
@@ -423,7 +487,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Customer
                 </label>
                 <select
@@ -439,7 +503,7 @@ const Musak63Entry = () => {
                 </select>
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Address
                 </label>
                 <input
@@ -452,7 +516,7 @@ const Musak63Entry = () => {
               </div>
 
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Challan Type
                 </label>
                 <input
@@ -465,7 +529,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Export Remarks
                 </label>
                 <input
@@ -477,7 +541,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   CPC
                 </label>
                 <input
@@ -489,7 +553,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Export Rate
                 </label>
                 <input
@@ -503,7 +567,7 @@ const Musak63Entry = () => {
             </div>
             <div className="w-[50%] p-2">
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Issue Date and Time
                 </label>
                 <input
@@ -514,7 +578,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Delivery Date and Time
                 </label>
                 <input
@@ -525,7 +589,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   TBIN/NID
                 </label>
                 <input
@@ -537,7 +601,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Destination
                 </label>
                 <input
@@ -549,7 +613,7 @@ const Musak63Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Vehicle Nature & No
                 </label>
                 <input
@@ -568,7 +632,7 @@ const Musak63Entry = () => {
               Product Transfer Details
             </h1>
             <hr />
-            <table className="w-[95%] items-center m-auto mt-2 text-xs text-left text-gray-50  border-collapse border border-gray-400">
+            <table className="w-[95%] items-center m-auto mt-2 text-lg text-left text-gray-50  border-collapse border border-gray-400">
               <thead className="text-[16px] text-gray-50 uppercase bg-gradient-to-l from-sky-500 via-violet-500 to-pink-500">
                 <tr>
                   <th className="p-2 border border-gray-400">Product Name</th>
@@ -585,7 +649,7 @@ const Musak63Entry = () => {
                   <th className="p-2 border border-gray-400">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-[16px]">
+              <tbody className="text-lg">
                 <tr>
                   <td className="p-2 border border-gray-400 w-[15%]">
                     <select
@@ -765,7 +829,7 @@ const Musak63Entry = () => {
                   </td>
                   <td className="p-2 border text-gray-800 border-gray-400 "></td>
                   <td className="p-2 border text-gray-800 border-gray-400 ">
-                    {totalUnitPrice}
+                    {/* {totalUnitPrice} */}
                   </td>
                   <td className="p-2 border text-gray-800 border-gray-400 ">
                     {/* {totalQuantity} */}
@@ -777,7 +841,9 @@ const Musak63Entry = () => {
                   <td className="p-2 border text-gray-800 border-gray-400 ">
                     {totalNetamount}
                   </td>
-                  <td className="p-2 border text-gray-800 border-gray-400 "></td>
+                  <td className="p-2 border text-gray-800 border-gray-400 ">
+                    {TotalVat}
+                  </td>
                   <td className="p-2 border text-gray-800 border-gray-400 ">
                     {totalgrossamount}
                   </td>
@@ -792,10 +858,11 @@ const Musak63Entry = () => {
           <div className="my-5 ml-16">
             <button
               type="submit"
+              disabled={isSaveClicked}
               onClick={handleUpload}
               className=" text-[18px] flex flex-row px-7 py-3 font-bold hover:text-gray-200 text-white rounded-lg bg-gradient-to-tl from-pink-600 to-pink-800 hover:bg-pink-900"
             >
-              Save
+              {isSaveClicked ? "Saving" : "Save"}
             </button>
           </div>
         </form>

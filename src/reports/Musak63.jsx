@@ -60,10 +60,10 @@ const Musak63 = () => {
   return (
     <>
       <div className="py-4 px-10 bg-slate-100 w-full flex justify-between">
-        <p className="font-bold text-14">Preview</p>
+        <p className="font-normal text-xl">Preview</p>
         <ReactToPrint
           trigger={() => (
-            <button className="bg-[#ff5c8e] text-white rounded-lg px-4 py-2 mx-1 text-14 hover:bg-[#9e103b]">
+            <button className="bg-[#ff5c8e] text-white rounded-lg px-4 py-2 mx-1 text-xl hover:bg-[#9e103b]">
               Print
             </button>
           )}
@@ -117,7 +117,7 @@ const Musak63 = () => {
         </div> */}
         <div className="flex w-[95%] pt-9 gap-3 text-black">
           {data && (
-            <div className="w-[45%] flex text-[12px] gap-2 flex-col items-baseline mr-5">
+            <div className="w-[45%] flex text-md gap-2 flex-col items-baseline mr-5">
               <p>ক্রেতার নামঃ {data.Customer}</p>
               <p>ক্রেতার বিআইএনঃ {data.BIN}</p>
               <p>ক্রেতার ঠিকানাঃ {data.Address}</p>
@@ -126,7 +126,7 @@ const Musak63 = () => {
             </div>
           )}
           {data && (
-            <div className="w-[50%] pl-20 text-[12px] gap-2 flex flex-col items-baseline text-black">
+            <div className="w-[50%] pl-20 text-md gap-2 flex flex-col items-baseline text-black">
               <p>চালান নম্বরঃ {data.InvoiceNum}</p>
               <p>ইস্যুর তারিখঃ {datePart}</p>
               <p>ইস্যুর সময়ঃ {timePart}</p>
@@ -135,8 +135,8 @@ const Musak63 = () => {
           )}
         </div>
         <div className="flex w-[95%] pt-9">
-          <table className="w-full text-center m-auto mt-2 text-xs text-black  border-collapse">
-            <thead className="text-14 uppercase ">
+          <table className="w-full text-center m-auto mt-2 text-md text-black  border-collapse">
+            <thead className="text-md uppercase ">
               <tr>
                 <td className="p-1 border border-black">ক্রমিক নং</td>
                 <td className="p-1 border border-black">
@@ -200,7 +200,7 @@ const Musak63 = () => {
                 </td>
               </tr>
             </thead>
-            <tbody className="text-14">
+            <tbody className="">
               <tr>
                 <td className="p-1 border border-black">(১)</td>
                 <td className="p-1 border border-black">(২)</td>
@@ -278,7 +278,7 @@ const Musak63 = () => {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-col items-baseline justify-between w-[95%] pt-10 text-black">
+        <div className="flex flex-col items-baseline justify-between w-[95%] text-md pt-10 text-black">
           <p className="pb-1">
             প্রতিষ্ঠান কর্তৃপক্ষের দায়িত্বপ্রাপ্ত ব্যক্তির নামঃ
           </p>

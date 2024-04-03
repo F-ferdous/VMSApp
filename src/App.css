@@ -1,9 +1,9 @@
-/* @font-face {
-  font-family: "vrinda";
+@font-face {
+  font-family: "Vrinda";
   src: url("./fonts/vrinda.ttf");
-} */
+}
 
-@import url(https://db.onlinewebfonts.com/c/e1f8d16379efd89740cc26099c533a74?family=Vrinda);
+/* @import url(https://db.onlinewebfonts.com/c/e1f8d16379efd89740cc26099c533a74?family=Vrinda); */
 
 * {
   font-family: "Vrinda";

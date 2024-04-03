@@ -71,8 +71,8 @@ const CustomerEntry = () => {
     <section className="w-full flex flex-col items-center justify-center mt-2 p-2">
       <div className=" bg-gray-50 rounded-xl  ">
         <ToastContainer />
-        <div className="bg-gradient-to-tl from-sky-400 to-sky-800 p-2 flex justify-between items-center">
-          <h1 className="text-white text-sm font-bold">Party Customer Entry</h1>
+        <div className="bg-gradient-to-tl from-sky-400 to-sky-800 p-2 flex text-lg justify-between items-center">
+          <h1 className="text-white  font-bold">Party Customer Entry</h1>
           <button
             className="px-3 py-2 text-white rounded-lg bg-[#0a4c76] hover:bg-[#13384f]"
             onClick={GoBack}

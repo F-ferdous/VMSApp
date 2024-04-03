@@ -47,6 +47,7 @@ const Musak65Entry = () => {
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [isEditClicked, setIsEditClicked] = useState(false);
+  const [isSaveClicked, setisSaveClicked] = useState(false);
 
   const [userData, setUserData] = useState(null);
   async function getUserData(db, userId) {
@@ -55,9 +56,11 @@ const Musak65Entry = () => {
     return docSnap.data();
   }
 
+  const navigate = useNavigate();
+
   const handleAddProduct = (e) => {
     e.preventDefault();
-    const newAmountWithoutVAT = unitPrice * quantity;
+    const newAmountWithoutVAT = Number((unitPrice * quantity).toFixed(2));
     const newProduct = {
       productName,
       uom,
@@ -69,7 +72,9 @@ const Musak65Entry = () => {
     setProductList([...productList, newProduct]);
     // Clear input fields after adding a new product
     setTotalQuantity(totalQuantity + parseInt(quantity, 10));
-    setTotalAmountWithoutVAT(totalAmountWithoutVAT + newAmountWithoutVAT);
+    setTotalAmountWithoutVAT(
+      Number((totalAmountWithoutVAT + newAmountWithoutVAT).toFixed(2))
+    );
 
     setProductName("");
     setUom("");
@@ -81,7 +86,29 @@ const Musak65Entry = () => {
 
   const getCurrentDateAndTime = () => {
     const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString(); // Change the date format as needed
+    const day = currentDate.getDate();
+    const monthIndex = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    // Get the month name using the month index
+    const monthName = monthNames[monthIndex];
+
+    const formattedDate = `${day}-${monthName}-${year}`;
     const formattedTime = currentDate.toLocaleTimeString(); // Change the time format as needed
     return `${formattedDate} ${formattedTime}`;
   };
@@ -95,12 +122,15 @@ const Musak65Entry = () => {
 
     setTotalQuantity(totalQuantity - parseInt(deletedProduct.quantity, 10));
     setTotalAmountWithoutVAT(
-      totalAmountWithoutVAT - deletedProduct.amountWithoutVAT
+      Number(
+        (totalAmountWithoutVAT - deletedProduct.amountWithoutVAT).toFixed(2)
+      )
     );
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
+    setisSaveClicked(true);
     try {
       const data = {
         issueDate,
@@ -114,28 +144,29 @@ const Musak65Entry = () => {
         totalQuantity,
         totalAmountWithoutVAT,
       };
-      await addDoc(collection(db, "ProductTransfer"), {
+      const docRef = await addDoc(collection(db, "ProductTransfer"), {
         ...data,
-      }).then(() => {
-        toast.success("Successfully added", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        setInvoiceNum("");
-        setTransferType("");
-        setTransferTo("");
-        setNote("");
-        setVehicleNum("");
-        setProductList([]);
-        setTotalAmountWithoutVAT(0);
-        setTotalQuantity(0);
       });
+      toast.success("Successfully added", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      setInvoiceNum("");
+      setTransferType("");
+      setTransferTo("");
+      setNote("");
+      setVehicleNum("");
+      setProductList([]);
+      setTotalAmountWithoutVAT(0);
+      setTotalQuantity(0);
+      setisSaveClicked(false);
+      navigate(`/ProductTransferReportView/${docRef.id}`);
     } catch (e) {
       console.log(e);
     }
@@ -231,7 +262,9 @@ const Musak65Entry = () => {
 
     setTotalQuantity(totalQuantity - parseInt(selectedProduct.quantity, 10));
     setTotalAmountWithoutVAT(
-      totalAmountWithoutVAT - selectedProduct.amountWithoutVAT
+      Number(
+        (totalAmountWithoutVAT - selectedProduct.amountWithoutVAT).toFixed(2)
+      )
     );
 
     setIsEditClicked(true);
@@ -240,7 +273,7 @@ const Musak65Entry = () => {
   const handleSaveEdit = (e) => {
     // Update the product in the productList array with edited values
     e.preventDefault();
-    const newAmountWithoutVAT = unitPrice * quantity;
+    const newAmountWithoutVAT = Number((unitPrice * quantity).toFixed(2));
 
     const updatedProductList = [...productList];
     updatedProductList[editingIndex] = {
@@ -253,7 +286,9 @@ const Musak65Entry = () => {
     };
 
     setTotalQuantity(totalQuantity + parseInt(quantity, 10));
-    setTotalAmountWithoutVAT(totalAmountWithoutVAT + newAmountWithoutVAT);
+    setTotalAmountWithoutVAT(
+      Number((totalAmountWithoutVAT + newAmountWithoutVAT).toFixed(2))
+    );
 
     // Clear input fields and reset editingIndex after saving edit
 
@@ -271,7 +306,6 @@ const Musak65Entry = () => {
     setRemarks("");
   };
 
-  const navigate = useNavigate();
   const GoBack = () => {
     navigate("/");
   };
@@ -280,11 +314,11 @@ const Musak65Entry = () => {
       <div className="bg-gray-100 w-[90%]">
         <ToastContainer />
         <div className="bg-gradient-to-tl from-sky-400 to-sky-800 p-2 flex justify-between items-center">
-          <h1 className="text-white text-[18px] font-bold">
+          <h1 className="text-white text-xl font-bold">
             Product Transfer Entry
           </h1>
           <button
-            className="px-3 py-2 text-white  text-[18px] rounded-lg bg-[#0a4c76] hover:bg-[#13384f]"
+            className="px-3 py-2 text-white  text-xl rounded-lg bg-[#0a4c76] hover:bg-[#13384f]"
             onClick={GoBack}
           >
             Go Back
@@ -292,11 +326,11 @@ const Musak65Entry = () => {
         </div>
 
         <hr />
-        <form className="w-[100%]">
+        <form className="w-[100%] text-lg">
           <div className="flex">
             <div className="w-[50%] p-2">
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Invoice No
                 </label>
                 <input
@@ -308,7 +342,7 @@ const Musak65Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Vehicle Number
                 </label>
                 <input
@@ -320,7 +354,7 @@ const Musak65Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Transfer Type
                 </label>
                 <input
@@ -334,7 +368,7 @@ const Musak65Entry = () => {
             </div>
             <div className="w-[50%] p-2">
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Issue Date and Time
                 </label>
                 <input
@@ -345,7 +379,7 @@ const Musak65Entry = () => {
                 />
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Transfer To
                 </label>
 
@@ -362,7 +396,7 @@ const Musak65Entry = () => {
                 </select>
               </div>
               <div className="flex flex-row w-full p-2 gap-2">
-                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-xs font-bold mb-2">
+                <label className="block uppercase text-left tracking-wide w-[30%] text-gray-700 text-lg font-bold mb-2">
                   Note
                 </label>
                 <input
@@ -377,12 +411,12 @@ const Musak65Entry = () => {
           </div>
 
           <div className="my-5">
-            <h1 className="text-white text-left text-[18px] font-bold bg-gradient-to-tl from-sky-400 to-sky-800 p-2">
+            <h1 className="text-white text-left text-md font-bold bg-gradient-to-tl from-sky-400 to-sky-800 p-2">
               Product Transfer Details
             </h1>
             <hr />
-            <table className="w-[90%] items-center m-auto mt-2 text-xs text-left text-gray-50  border-collapse border border-gray-400">
-              <thead className="text-[16px] text-gray-50 uppercase bg-gradient-to-l from-sky-500 via-violet-500 to-pink-500">
+            <table className="w-[90%] items-center m-auto mt-2  text-left text-gray-50  border-collapse border border-gray-400">
+              <thead className=" text-gray-50 uppercase bg-gradient-to-l from-sky-500 via-violet-500 to-pink-500">
                 <tr>
                   <th className="p-2 border border-gray-400">Product Name</th>
                   <th className="p-2 border border-gray-400">UOM</th>
@@ -396,13 +430,13 @@ const Musak65Entry = () => {
                   <th className="p-2 border border-gray-400">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-[16px]">
+              <tbody className="text-lg">
                 <tr>
                   <td className="p-2 border border-gray-400 w-[30%]">
                     <select
                       value={productName}
                       onChange={(e) => setProductName(e.target.value)}
-                      className="appearance-none block w-full bg-white text-[16px] text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="appearance-none block w-full bg-white text-lg text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500focus:outline-none focus:ring-2 focus:ring-blue-600"
                     >
                       <option className="text-gray-600">Select...</option>
                       {prodList &&
@@ -416,7 +450,7 @@ const Musak65Entry = () => {
                       type="text"
                       value={uom}
                       onChange={(e) => setUom(e.target.value)}
-                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-[16px]"
+                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-lg"
                     />
                   </td>
                   <td className="p-2 border border-gray-400 w-[10%]">
@@ -424,7 +458,7 @@ const Musak65Entry = () => {
                       type="number"
                       value={unitPrice}
                       onChange={(e) => setUnitPrice(e.target.value)}
-                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-[16px]"
+                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-lg"
                     />
                   </td>
                   <td className="p-2 border border-gray-400 w-[10%]">
@@ -432,7 +466,7 @@ const Musak65Entry = () => {
                       type="number"
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}
-                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-[16px]"
+                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-lg"
                     />
                   </td>
                   <td className="p-2 border border-gray-400 w-[15%]">
@@ -441,7 +475,7 @@ const Musak65Entry = () => {
                       disabled
                       value={unitPrice * quantity}
                       onChange={(e) => setAmountWithoutVAT(e.target.value)}
-                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-[16px] "
+                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-lg "
                     />
                   </td>
                   <td className="p-2 border border-gray-400 w-[15%]">
@@ -449,7 +483,7 @@ const Musak65Entry = () => {
                       type="text"
                       value={remarks}
                       onChange={(e) => setRemarks(e.target.value)}
-                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-[16px]"
+                      className="appearance-none block  w-full bg-white text-gray-700 border border-gray-200 rounded-lg py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-lg"
                     />
                   </td>
                   <td className="p-2 border border-gray-400 w-[10%]">
@@ -511,15 +545,15 @@ const Musak65Entry = () => {
                   </tr>
                 ))}
                 <tr>
-                  <td className="p-2 border text-gray-800 border-gray-400 w-[30%] text-[16px]">
+                  <td className="p-2 border text-gray-800 border-gray-400 w-[30%] text-lg">
                     Total
                   </td>
                   <td className="p-2 border text-gray-800 border-gray-400 w-[10%]"></td>
                   <td className="p-2 border text-gray-800 border-gray-400 w-[10%]"></td>
-                  <td className="p-2 border text-gray-800 border-gray-400 w-[10%] text-[16px]">
+                  <td className="p-2 border text-gray-800 border-gray-400 w-[10%] text-lg">
                     {totalQuantity}
                   </td>
-                  <td className="p-2 border text-gray-800 border-gray-400 w-[15%] text-[16px]">
+                  <td className="p-2 border text-gray-800 border-gray-400 w-[15%] text-lg">
                     {totalAmountWithoutVAT}
                   </td>
                   <td className="p-2 border text-gray-800 border-gray-400 w-[15%]"></td>
@@ -532,10 +566,11 @@ const Musak65Entry = () => {
           <div className="my-5 ml-16">
             <button
               type="submit"
+              disabled={isSaveClicked}
               onClick={handleUpload}
               className="flex flex-row px-7 py-3 font-bold hover:text-gray-200 text-white rounded-lg bg-gradient-to-tl from-pink-600 to-pink-800 hover:bg-pink-900"
             >
-              Save
+              {isSaveClicked ? "Saving" : "Save"}
             </button>
           </div>
         </form>

@@ -23,12 +23,14 @@ const Login = () => {
     <section className="w-full items-center justify-center">
       <div className="flex flex-row  items-center justify-center absolute top-[30%] left-[30%]">
         <div className="bg-gradient-to-r from-sky-500 via-violet-600 to-pink-500 rounded-xl p-2 flex flex-col shadow-lg ">
-          <p className="flex gap-2 text-xl justify-center font-bold p-0 pb-2 m-0 text-white text-underline">
-            <AiFillCodeSandboxCircle className="text-3xl text-white" /> VMS App
+          <p className="flex gap-2 text-2xl justify-center font-bold p-2 m-0 text-white text-underline">
+            <AiFillCodeSandboxCircle className="text-4xl text-white" /> VMS App
           </p>
-          <h4 className="font-bold p-2 text-white">Sign In to Continue</h4>
+          <h4 className="font-semibold p-2 text-white text-xl">
+            Sign In to Continue
+          </h4>
           <hr />
-          <form className="p-2 text-white" onSubmit={HandleLogin}>
+          <form className="p-2 text-white text-xl" onSubmit={HandleLogin}>
             <TextInput
               label="User Name"
               placeholder="Enter User Name"
